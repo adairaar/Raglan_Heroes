@@ -1,0 +1,9 @@
+\begin{tabular}{lr}
+\toprule
+Statistic & Value \\
+\midrule
+Chi-squared & 15.6745 \\
+p-value & 0.0740 \\
+Degrees of freedom & 9.0000 \\
+\bottomrule
+\end{tabular}

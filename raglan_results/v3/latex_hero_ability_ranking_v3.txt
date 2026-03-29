@@ -1,0 +1,42 @@
+\begin{tabular}{lrr}
+\toprule
+Name & Ability (theta) & Total Score \\
+\midrule
+Dionysus & 0.78 & 13 \\
+Yudhishthira & 0.78 & 13 \\
+Zeus & 0.65 & 12 \\
+Nezha & 0.65 & 12 \\
+Krishna & 0.65 & 12 \\
+Perseus & 0.53 & 11 \\
+Fionn mac Cumhaill & 0.53 & 11 \\
+Arthur & 0.53 & 11 \\
+Pelops & 0.49 & 11 \\
+Jason & 0.45 & 11 \\
+Romulus & 0.45 & 11 \\
+Aeneas & 0.42 & 10 \\
+Rama & 0.42 & 10 \\
+Bellerophon & 0.39 & 10 \\
+Cúchulainn & 0.38 & 10 \\
+Heracles & 0.38 & 11 \\
+Karna & 0.34 & 10 \\
+Maui & 0.34 & 10 \\
+Achilles & 0.32 & 9 \\
+Oedipus & 0.32 & 12 \\
+Asclepius & 0.28 & 10 \\
+Sun Wukong & 0.18 & 10 \\
+Thánh Gióng & -0.03 & 10 \\
+Gilgamesh (Hel) & -0.10 & 9 \\
+Theseus & -0.12 & 12 \\
+Siegfried & -0.18 & 11 \\
+Cadmus & -0.22 & 8 \\
+Nyikang & -0.29 & 7 \\
+Moses & -0.81 & 12 \\
+Watu Gunung & -0.98 & 10 \\
+Lleu Llaw Gyffes & -1.02 & 9 \\
+Mwindo & -1.07 & 10 \\
+Fereydun & -1.36 & 9 \\
+Horus & -1.51 & 8 \\
+Rostam & -1.52 & 6 \\
+Apollo & -1.57 & 7 \\
+\bottomrule
+\end{tabular}

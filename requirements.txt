@@ -1,0 +1,11 @@
+numpy
+pandas
+matplotlib
+seaborn
+scipy
+scikit-learn
+factor_analyzer
+girth
+tqdm
+openpyxl
+pyrelimri

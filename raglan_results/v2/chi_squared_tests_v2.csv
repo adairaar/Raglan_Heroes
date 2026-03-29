@@ -1,0 +1,4 @@
+Hypothesis,Chi-square,p-value,df
+Uniform,20.1111,0.017239,9
+Fitted binomial,6.1741,0.722371,9
+Binomial (p=0.5),16367.0305,0.0,9

@@ -1,0 +1,8 @@
+\begin{tabular}{lrrl}
+\toprule
+Test & Statistic & p-value & H0 \\
+\midrule
+One-sample t-test & 2.1720 & 0.0415 & mean diff = 0 \\
+Wilcoxon signed-rank & 56.0000 & 0.0221 & median diff = 0 \\
+\bottomrule
+\end{tabular}

@@ -1,0 +1,42 @@
+\begin{tabular}{lllllll}
+\toprule
+Name & F1 & F2 & F3 & F4 & F5 & F6 \\
+\midrule
+Achilles &  & X &  &  & X &  \\
+Aeneas &  & X &  &  & X & X \\
+Apollo & X &  &  &  & X &  \\
+Arthur &  & X &  & X & X & X \\
+Asclepius & X & X & X &  & X &  \\
+Bellerophon &  & X & X & X & X &  \\
+Cadmus &  & X &  &  &  &  \\
+Cúchulainn & X & X &  & X & X &  \\
+Dionysus & X & X & X & X & X & X \\
+Fereydun & X &  &  & X &  & X \\
+Fionn mac Cumhaill & X & X &  &  & X & X \\
+Gilgamesh (Hel) & X & X &  &  & X &  \\
+Heracles & X & X & X & X & X &  \\
+Horus & X &  &  &  & X & X \\
+Jason & X & X &  & X & X & X \\
+Karna & X & X &  & X & X &  \\
+Krishna & X & X &  & X & X & X \\
+Lleu Llaw Gyffes &  &  & X & X &  &  \\
+Maui & X & X &  & X & X &  \\
+Moses & X &  & X & X & X & X \\
+Mwindo & X &  &  & X & X & X \\
+Nezha & X & X & X & X & X &  \\
+Nyikang &  & X &  &  &  &  \\
+Oedipus & X & X & X & X &  & X \\
+Pelops & X & X &  & X & X & X \\
+Perseus & X & X &  & X & X &  \\
+Rama &  & X &  &  & X & X \\
+Romulus & X & X &  & X & X & X \\
+Rostam &  &  &  & X &  &  \\
+Siegfried & X & X &  & X & X & X \\
+Sun Wukong &  & X & X & X & X & X \\
+Theseus & X & X & X & X & X & X \\
+Thánh Gióng &  & X & X & X & X &  \\
+Watu Gunung & X &  & X & X &  &  \\
+Yudhishthira & X & X & X & X & X & X \\
+Zeus & X & X & X &  & X & X \\
+\bottomrule
+\end{tabular}

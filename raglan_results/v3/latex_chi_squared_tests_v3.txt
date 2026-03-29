@@ -1,0 +1,9 @@
+\begin{tabular}{lrrr}
+\toprule
+Hypothesis & Chi-square & p-value & df \\
+\midrule
+Uniform & 19.5556 & 0.0066 & 7 \\
+Fitted binomial & 3.9036 & 0.7908 & 7 \\
+Binomial (p=0.5) & 2063.0506 & 0.0000 & 7 \\
+\bottomrule
+\end{tabular}
