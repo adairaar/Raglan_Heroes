@@ -626,6 +626,23 @@ def run_version(version: str, base_out: str, deadband: float = 0.0):
                                    max_score=VERSIONS[version]["num_feats"])
     print(chi_sq_df.to_string(index=False))
 
+    # 10. Bimodality tests on revised Raglan score distribution
+    print("\n[10] Bimodality tests on revised Raglan score distribution...")
+    scores_arr = np.array(scores, dtype=float)
+    bim_row = bimodality_tests(scores_arr, f"Revised Raglan scores ({version})")
+    _save_bimodality_results(
+        [bim_row], out_dir,
+        f"bimodality_tests_scores_{version}.csv",
+        f"latex_bimodality_tests_scores_{version}.txt",
+    )
+    sil_rows = _silverman_multimode_test(scores_arr)
+    _save_silverman_results(
+        [sil_rows], [f"Revised Raglan scores ({version})"],
+        out_dir,
+        f"silverman_modes_scores_{version}.csv",
+        f"latex_silverman_modes_scores_{version}.txt",
+    )
+
     print(f"\n  Done. Results saved to: {out_dir}/")
 
 
@@ -765,6 +782,290 @@ def plot_binomial_original(hist_counts: list, myth_counts: list, out_dir: str) -
     return fitted_params
 
 
+# ---------------------------------------------------------------------------
+# Bimodality tests
+# ---------------------------------------------------------------------------
+
+def _count_kde_modes(data: np.ndarray, bandwidth: float, n_grid: int = 512) -> int:
+    """Count local maxima of a Gaussian KDE using scipy.signal.find_peaks."""
+    from scipy.stats import gaussian_kde
+    from scipy.signal import find_peaks
+    std = data.std(ddof=1)
+    if std == 0:
+        return 1
+    kde = gaussian_kde(data, bw_method=bandwidth / std)
+    lo = data.min() - 3 * bandwidth
+    hi = data.max() + 3 * bandwidth
+    x_grid = np.linspace(lo, hi, n_grid)
+    dens = kde(x_grid)
+    peaks, _ = find_peaks(dens)
+    return max(1, len(peaks))
+
+
+def _silverman_test(data: np.ndarray, n_boot: int = 999, seed: int = 42) -> tuple[float, float]:
+    """
+    Silverman's (1981) bandwidth test for unimodality.
+    Finds the critical bandwidth h_c at which the KDE transitions to 1 mode,
+    then estimates the p-value via bootstrap: proportion of resamples that
+    exhibit >1 mode under h_c.
+    Returns (h_c, p_value).
+    """
+    std = data.std(ddof=1)
+    if std == 0:
+        return (0.0, 1.0)
+    h_grid = np.linspace(0.01 * std, 2.0 * std, 300)
+    # Find smallest h where KDE has ≤ 1 mode
+    h_c = h_grid[-1]
+    for h in h_grid:
+        if _count_kde_modes(data, h) <= 1:
+            h_c = h
+            break
+    rng = np.random.default_rng(seed)
+    n = len(data)
+    count_multi = sum(
+        1 for _ in range(n_boot)
+        if _count_kde_modes(
+            rng.choice(data, size=n, replace=True) + rng.normal(0, h_c, size=n),
+            h_c,
+        ) > 1
+    )
+    return float(h_c), float(count_multi / n_boot)
+
+
+def _silverman_multimode_test(data: np.ndarray, max_modes: int = 4,
+                              n_boot: int = 999, seed: int = 42) -> list[dict]:
+    """
+    Silverman's (1981) bandwidth test generalised to k = 1 … max_modes.
+
+    For each k:
+      h_k  — smallest bandwidth at which the KDE has ≤ k modes (critical width).
+      p    — bootstrap p-value: proportion of smoothed resamples with > k modes
+              under h_k (H0: at most k modes; low p → reject).
+      AIC, BIC — from a k-component Gaussian Mixture Model fitted to the data.
+
+    Returns a list of dicts (one per k) suitable for pd.DataFrame.
+    """
+    from sklearn.mixture import GaussianMixture, BayesianGaussianMixture
+
+    std = data.std(ddof=1)
+    n = len(data)
+    rng = np.random.default_rng(seed)
+    rows = []
+
+    for k in range(1, max_modes + 1):
+        row = {"k (modes)": k}
+
+        # --- Critical bandwidth h_k ---
+        if std == 0:
+            h_k = 0.0
+        else:
+            h_grid = np.linspace(0.01 * std, 3.0 * std, 500)
+            h_k = h_grid[-1]
+            for h in h_grid:
+                if _count_kde_modes(data, h) <= k:
+                    h_k = h
+                    break
+        row["h_k (critical bandwidth)"] = round(float(h_k), 6)
+
+        # --- Bootstrap p-value ---
+        if std == 0 or h_k == 0:
+            p_val = 1.0
+        else:
+            count_reject = sum(
+                1 for _ in range(n_boot)
+                if _count_kde_modes(
+                    rng.choice(data, size=n, replace=True)
+                    + rng.normal(0, h_k, size=n),
+                    h_k,
+                ) > k
+            )
+            p_val = count_reject / n_boot
+        row["p-value"] = round(float(p_val), 4)
+
+        # --- Classical GMM AIC / BIC for k components ---
+        X = data.reshape(-1, 1)
+        gmm = GaussianMixture(n_components=k, random_state=seed,
+                              n_init=5, max_iter=500).fit(X)
+        row["GMM AIC"] = round(float(gmm.aic(X)), 4)
+        row["GMM BIC"] = round(float(gmm.bic(X)), 4)
+
+        # --- Bayesian GMM for k components ---
+        bgmm = BayesianGaussianMixture(n_components=k, random_state=seed,
+                                        n_init=5, max_iter=500).fit(X)
+        bgmm_effective = int(np.sum(bgmm.weights_ > 0.05))
+        row["BGMM Lower Bound"] = round(float(bgmm.lower_bound_), 4)
+        row["BGMM Effective Components"] = bgmm_effective
+
+        rows.append(row)
+
+    return rows
+
+
+def _save_silverman_results(all_rows: list[list[dict]], labels: list[str],
+                             out_dir: str, csv_name: str, latex_name: str) -> pd.DataFrame:
+    """
+    Combine per-distribution Silverman multi-mode rows into one DataFrame,
+    prepend a 'Distribution' column, and save CSV + LaTeX.
+    """
+    combined = []
+    for label, rows in zip(labels, all_rows):
+        for row in rows:
+            combined.append({"Distribution": label, **row})
+    df = pd.DataFrame(combined)
+    df.to_csv(os.path.join(out_dir, csv_name), index=False)
+    save_latex(
+        df.to_latex(index=False, float_format="{:.4f}".format),
+        os.path.join(out_dir, latex_name),
+    )
+    print(f"  Saved: {csv_name}, {latex_name}")
+    return df
+
+
+def _van_der_eijk_A(data: np.ndarray, K: int = None) -> float:
+    """
+    Van der Eijk's (2001) A measure of agreement/concentration.
+    Data are binned into K ordered categories (Sturges' rule, capped at 10).
+    Decomposes the histogram into uniform layers via the layer-peeling algorithm:
+      for each contiguous non-zero run of span S, A_layer = 1 - (S-1)/(K-1).
+    A = 1: all cases in one bin (maximum concentration / unimodal spike).
+    A = 0: perfectly uniform over all K bins.
+    Lower A indicates greater spread; bimodal distributions with broad peaks
+    produce lower A than sharply concentrated ones.
+    """
+    if K is None:
+        K = min(max(5, int(np.ceil(1 + np.log2(len(data))))), 10)
+
+    counts, _ = np.histogram(data, bins=K)
+    N = float(counts.sum())
+    if N == 0:
+        return float("nan")
+
+    remaining = counts.astype(float)
+    A_total = 0.0
+
+    while remaining.sum() > 1e-9:
+        # Identify strictly contiguous non-zero runs
+        runs, i = [], 0
+        while i < K:
+            if remaining[i] > 1e-9:
+                j = i + 1
+                while j < K and remaining[j] > 1e-9:
+                    j += 1
+                runs.append((i, j - 1))
+                i = j
+            else:
+                i += 1
+        if not runs:
+            break
+        for s, e in runs:
+            S = e - s + 1
+            m = remaining[s:e + 1].min()
+            if m < 1e-9:
+                continue
+            A_layer = 1.0 - (S - 1) / (K - 1) if K > 1 else 1.0
+            A_total += (S * m / N) * A_layer
+            remaining[s:e + 1] -= m
+
+    return round(float(A_total), 6)
+
+
+def bimodality_tests(data, label: str, seed: int = 42) -> dict:
+    """
+    Run seven bimodality tests on a 1-D array.
+    Tests: Hartigan's Dip Test, Bimodality Coefficient, GMM BIC comparison,
+    Silverman's bandwidth test, Ashman's D, van der Eijk's A,
+    KDE peak count (Scott's rule, scipy.signal.find_peaks).
+    Returns a dict suitable as a DataFrame row.
+    """
+    from scipy.stats import skew, kurtosis as scipy_kurtosis, gaussian_kde
+    from scipy.signal import find_peaks
+    from sklearn.mixture import GaussianMixture, BayesianGaussianMixture
+    from diptest import diptest
+
+    x = np.asarray(data, dtype=float)
+    n = len(x)
+    row = {"Distribution": label, "N": n}
+
+    # 1. Hartigan's Dip Test (H0: unimodal)
+    dip, dip_p = diptest(x)
+    row["Dip Stat"] = round(float(dip), 6)
+    row["Dip p-value"] = round(float(dip_p), 6)
+
+    # 2. Bimodality Coefficient (BC; SAS formula; BC > 0.555 suggests bimodality)
+    s = skew(x)
+    k = scipy_kurtosis(x)          # excess kurtosis (Fisher)
+    denom = (k + 3 * (n - 1) ** 2 / ((n - 2) * (n - 3))) if n > 3 else (k + 3)
+    bc = float((s ** 2 + 1) / denom) if denom != 0 else float("nan")
+    row["Bimodality Coef"] = round(bc, 6)
+    row["BC > 0.555"] = "Yes" if bc > 0.555 else "No"
+
+    # 3. GMM (classical) — compare BIC for k=1 vs k=2 components
+    X = x.reshape(-1, 1)
+    gmm1 = GaussianMixture(n_components=1, random_state=seed).fit(X)
+    gmm2 = GaussianMixture(n_components=2, random_state=seed).fit(X)
+    bic1, bic2 = gmm1.bic(X), gmm2.bic(X)
+    delta_bic = bic1 - bic2          # positive → k=2 preferred
+    row["GMM BIC k=1"] = round(float(bic1), 4)
+    row["GMM BIC k=2"] = round(float(bic2), 4)
+    row["GMM ΔBIC (k=1−k=2)"] = round(float(delta_bic), 4)
+    row["GMM Bimodal"] = "Yes" if delta_bic > 0 else "No"
+
+    # 3b. Bayesian GMM (BGMM) — k=2 components; effective components inferred from weights
+    bgmm2 = BayesianGaussianMixture(n_components=2, random_state=seed,
+                                     n_init=5, max_iter=500).fit(X)
+    bgmm_weights = bgmm2.weights_
+    bgmm_effective = int(np.sum(bgmm_weights > 0.05))   # components with >5% weight
+    # BGMM does not expose AIC/BIC directly; use lower bound on log-likelihood
+    bgmm_lb = bgmm2.lower_bound_
+    row["BGMM Effective Components"] = bgmm_effective
+    row["BGMM Lower Bound"] = round(float(bgmm_lb), 4)
+    row["BGMM Bimodal"] = "Yes" if bgmm_effective >= 2 else "No"
+
+    # 4. Silverman's Test (p-value ≤ 0.05 → reject unimodality)
+    sil_h, sil_p = _silverman_test(x, seed=seed)
+    row["Silverman h_c"] = round(sil_h, 6)
+    row["Silverman p-value"] = round(sil_p, 4)
+
+    # 5. Ashman's D — separation of the two classical GMM components (D > 2 → well-separated)
+    mu1, mu2 = gmm2.means_[:, 0]
+    sig1, sig2 = np.sqrt(gmm2.covariances_[:, 0, 0])
+    ashman_d = float(np.sqrt(2) * abs(mu1 - mu2) / np.sqrt(sig1 ** 2 + sig2 ** 2))
+    row["Ashman's D"] = round(ashman_d, 6)
+    row["D > 2"] = "Yes" if ashman_d > 2 else "No"
+
+    # 6. Van der Eijk's A (concentration; A→1: sharply peaked, A→0: spread/uniform)
+    row["Van der Eijk's A"] = _van_der_eijk_A(x)
+
+    # 7. KDE peak count — Scott's rule bandwidth, find_peaks on 512-point grid
+    if x.std(ddof=1) > 0:
+        kde = gaussian_kde(x)   # Scott's rule by default
+        x_grid = np.linspace(x.min(), x.max(), 512)
+        dens = kde(x_grid)
+        peaks, _ = find_peaks(dens)
+        n_peaks = max(1, len(peaks))
+    else:
+        n_peaks = 1
+    row["KDE N Peaks"] = n_peaks
+    row["KDE Bimodal"] = "Yes" if n_peaks >= 2 else "No"
+
+    return row
+
+
+def _save_bimodality_results(rows: list[dict], out_dir: str,
+                              csv_name: str, latex_name: str) -> pd.DataFrame:
+    """Build DataFrame from bimodality test rows, save CSV and LaTeX."""
+    df = pd.DataFrame(rows)
+    df.to_csv(os.path.join(out_dir, csv_name), index=False)
+    numeric_cols = df.select_dtypes(include="number").columns
+    fmt = {c: "{:.4f}".format for c in numeric_cols}
+    save_latex(
+        df.to_latex(index=False, float_format="{:.4f}".format),
+        os.path.join(out_dir, latex_name),
+    )
+    print(f"  Saved: {csv_name}, {latex_name}")
+    return df
+
+
 def analyse_rate_differences(out_dir: str):
     """
     Load per-criterion rates for HIST (row 57) and MYTH (row 60) from the
@@ -818,6 +1119,30 @@ def analyse_rate_differences(out_dir: str):
         result_df.to_latex(index=False, float_format="{:.4f}".format),
         os.path.join(out_dir, "latex_rate_difference_tests.txt"),
     )
+
+    # --- Bimodality tests on hist_rates, myth_rates, and their differences ---
+    print("\n  Bimodality tests...")
+    bim_rows = [
+        bimodality_tests(hist_rates, "HIST rates"),
+        bimodality_tests(myth_rates, "MYTH rates"),
+        bimodality_tests(diffs,       "MYTH − HIST differences"),
+    ]
+    _save_bimodality_results(
+        bim_rows, out_dir,
+        "bimodality_tests_rates.csv",
+        "latex_bimodality_tests_rates.txt",
+    )
+
+    # Silverman multi-mode tests on each rate distribution
+    labels_r = ["HIST rates", "MYTH rates", "MYTH − HIST differences"]
+    arrays_r  = [np.asarray(hist_rates), np.asarray(myth_rates), np.asarray(diffs)]
+    sil_rows_r = [_silverman_multimode_test(a) for a in arrays_r]
+    _save_silverman_results(
+        sil_rows_r, labels_r, out_dir,
+        "silverman_modes_rates.csv",
+        "latex_silverman_modes_rates.txt",
+    )
+
     return result_df
 
 
@@ -834,24 +1159,45 @@ def run_original_raglan(base_out: str):
     print(f"  HIST ({len(hist_counts)} values): {hist_counts}")
     print(f"  MYTH ({len(myth_counts)} values): {myth_counts}")
 
-    print("\n[1] Box and violin plots...")
+    print("\n[1] Bimodality tests on score distributions...")
+    bim_rows = [
+        bimodality_tests(hist_counts, "Historical counts"),
+        bimodality_tests(myth_counts, "Mythical counts"),
+    ]
+    _save_bimodality_results(
+        bim_rows, out_dir,
+        "bimodality_tests_counts.csv",
+        "latex_bimodality_tests_counts.txt",
+    )
+
+    labels_c = ["Historical counts", "Mythical counts"]
+    arrays_c  = [np.asarray(hist_counts, dtype=float),
+                 np.asarray(myth_counts, dtype=float)]
+    sil_rows_c = [_silverman_multimode_test(a) for a in arrays_c]
+    _save_silverman_results(
+        sil_rows_c, labels_c, out_dir,
+        "silverman_modes_counts.csv",
+        "latex_silverman_modes_counts.txt",
+    )
+
+    print("\n[2] Box and violin plots...")
     plot_box_violin_original(hist_counts, myth_counts, out_dir)
 
-    print("\n[2] Chi-squared contingency table (historical vs mythical)...")
+    print("\n[3] Chi-squared contingency table (historical vs mythical)...")
     result_df = chi_squared_contingency_original(hist_counts, myth_counts, out_dir)
     print(result_df.to_string(index=False))
 
-    print("\n[3] Binomial fits to historical and mythical scores...")
+    print("\n[4] Binomial fits to historical and mythical scores...")
     fitted_params = plot_binomial_original(hist_counts, myth_counts, out_dir)
 
-    print("\n[4] Chi-squared goodness-of-fit tests on Raglan scores...")
+    print("\n[5] Chi-squared goodness-of-fit tests on Raglan scores...")
     for group, counts in [("Historical", hist_counts), ("Mythical", myth_counts)]:
         n, p_fitted = fitted_params[group]
         name = f"chi_squared_tests_{group.lower()}"
         print(f"  {group} (n={n}, p_fitted={p_fitted:.4f}):")
         chi_squared_tests(counts, n, p_fitted, out_dir, version="original", name=name)
 
-    print("\n[5] Rate differences (Mythical − Historical) per criterion...")
+    print("\n[6] Rate differences (Mythical − Historical) per criterion...")
     rate_diff_df = analyse_rate_differences(out_dir)
     print(rate_diff_df.to_string(index=False))
 

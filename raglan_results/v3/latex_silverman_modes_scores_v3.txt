@@ -1,0 +1,10 @@
+\begin{tabular}{lrrrrrrr}
+\toprule
+Distribution & k (modes) & h_k (critical bandwidth) & p-value & GMM AIC & GMM BIC & BGMM Lower Bound & BGMM Effective Components \\
+\midrule
+Revised Raglan scores (v3) & 1 & 0.5080 & 0.8999 & 140.8005 & 143.9675 & -42.2656 & 1 \\
+Revised Raglan scores (v3) & 2 & 0.4392 & 0.7017 & 142.7318 & 150.6494 & -38.7403 & 1 \\
+Revised Raglan scores (v3) & 3 & 0.4293 & 0.2683 & 147.3631 & 160.0312 & -35.8150 & 1 \\
+Revised Raglan scores (v3) & 4 & 0.3900 & 0.0971 & 58.3671 & 75.7858 & -32.8331 & 1 \\
+\bottomrule
+\end{tabular}

@@ -1,0 +1,9 @@
+\begin{tabular}{lrrrrlrrrlrrlrrrlrrl}
+\toprule
+Distribution & N & Dip Stat & Dip p-value & Bimodality Coef & BC > 0.555 & GMM BIC k=1 & GMM BIC k=2 & GMM ΔBIC (k=1−k=2) & GMM Bimodal & BGMM Effective Components & BGMM Lower Bound & BGMM Bimodal & Silverman h_c & Silverman p-value & Ashman's D & D > 2 & Van der Eijk's A & KDE N Peaks & KDE Bimodal \\
+\midrule
+HIST rates & 22 & 0.0979 & 0.0690 & 0.4013 & No & 5.7176 & 9.8685 & -4.1509 & No & 1 & 21.5475 & No & 0.1541 & 0.2202 & 2.9039 & Yes & 0.3818 & 2 & Yes \\
+MYTH rates & 22 & 0.0909 & 0.1268 & 0.4014 & No & -17.9265 & -16.7921 & -1.1344 & No & 1 & 34.4439 & No & 0.0681 & 0.4875 & 3.6779 & Yes & 0.6182 & 1 & No \\
+MYTH − HIST differences & 22 & 0.0455 & 0.9898 & 0.3006 & No & 4.6631 & 13.6684 & -9.0053 & No & 1 & 22.1227 & No & 0.1123 & 0.5295 & 0.8510 & No & 0.5273 & 1 & No \\
+\bottomrule
+\end{tabular}

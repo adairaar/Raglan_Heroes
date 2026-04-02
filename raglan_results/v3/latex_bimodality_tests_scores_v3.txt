@@ -1,0 +1,7 @@
+\begin{tabular}{lrrrrlrrrlrrlrrrlrrl}
+\toprule
+Distribution & N & Dip Stat & Dip p-value & Bimodality Coef & BC > 0.555 & GMM BIC k=1 & GMM BIC k=2 & GMM ΔBIC (k=1−k=2) & GMM Bimodal & BGMM Effective Components & BGMM Lower Bound & BGMM Bimodal & Silverman h_c & Silverman p-value & Ashman's D & D > 2 & Van der Eijk's A & KDE N Peaks & KDE Bimodal \\
+\midrule
+Revised Raglan scores (v3) & 36 & 0.1111 & 0.0006 & 0.3982 & No & 143.9675 & 150.6494 & -6.6819 & No & 1 & -38.7403 & No & 0.5078 & 0.8999 & 3.4533 & Yes & 0.4444 & 1 & No \\
+\bottomrule
+\end{tabular}
