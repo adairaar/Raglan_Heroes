@@ -1,0 +1,2 @@
+Distribution,N,Dip Stat,Dip p-value,Bimodality Coef,BC > 0.555,GMM BIC k=1,GMM BIC k=2,GMM ΔBIC (k=1−k=2),GMM Bimodal,BGMM Effective Components,BGMM Lower Bound,BGMM Bimodal,Silverman h_c,Silverman p-value,Ashman's D,D > 2,Van der Eijk's A,KDE N Peaks,KDE Bimodal
+Revised Raglan scores (v2),36,0.097222,0.006061,0.408328,No,154.6437,163.1478,-8.5041,No,1,-44.3749,No,0.563646,0.9239,2.39063,Yes,0.296296,1,No

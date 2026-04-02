@@ -1,0 +1,5 @@
+Distribution,k (modes),h_k (critical bandwidth),p-value,GMM AIC,GMM BIC,BGMM Lower Bound,BGMM Effective Components
+Revised Raglan scores (v2),1,0.554961,0.9319,151.4767,154.6437,-47.752,1
+Revised Raglan scores (v2),2,0.509349,0.7277,155.2302,163.1478,-44.3749,1
+Revised Raglan scores (v2),3,0.486544,0.3123,159.6157,172.2838,-41.5979,1
+Revised Raglan scores (v2),4,0.463738,0.1111,82.8435,100.2622,-38.7643,1

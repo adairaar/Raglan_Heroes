@@ -1,0 +1,18 @@
+\begin{tabular}{lrrrrrrr}
+\toprule
+Distribution & k (modes) & h_k (critical bandwidth) & p-value & GMM AIC & GMM BIC & BGMM Lower Bound & BGMM Effective Components \\
+\midrule
+HIST rates & 1 & 0.1537 & 0.2252 & 3.5355 & 5.7176 & 16.3562 & 1 \\
+HIST rates & 2 & 0.0759 & 0.5475 & 4.4076 & 9.8628 & 21.5475 & 1 \\
+HIST rates & 3 & 0.0627 & 0.3003 & -13.0545 & -4.3262 & 26.2946 & 1 \\
+HIST rates & 4 & 0.0612 & 0.0310 & -10.3787 & 1.6228 & 31.1379 & 1 \\
+MYTH rates & 1 & 0.0684 & 0.4845 & -20.1086 & -17.9265 & 28.7152 & 1 \\
+MYTH rates & 2 & 0.0280 & 0.9690 & -22.2473 & -16.7921 & 34.4439 & 1 \\
+MYTH rates & 3 & 0.0246 & 0.8308 & -17.7183 & -8.9900 & 39.7283 & 1 \\
+MYTH rates & 4 & 0.0246 & 0.3784 & -24.1049 & -12.1035 & 45.1090 & 1 \\
+MYTH − HIST differences & 1 & 0.1128 & 0.5215 & 2.4810 & 4.6631 & 16.9074 & 1 \\
+MYTH − HIST differences & 2 & 0.0726 & 0.6206 & 3.7670 & 9.2222 & 22.1227 & 1 \\
+MYTH − HIST differences & 3 & 0.0612 & 0.3654 & 7.3532 & 16.0815 & 26.8937 & 1 \\
+MYTH − HIST differences & 4 & 0.0511 & 0.2262 & 12.3772 & 24.3786 & 31.7610 & 1 \\
+\bottomrule
+\end{tabular}

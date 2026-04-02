@@ -1,0 +1,3 @@
+Distribution,N,Dip Stat,Dip p-value,Bimodality Coef,BC > 0.555,GMM BIC k=1,GMM BIC k=2,GMM ΔBIC (k=1−k=2),GMM Bimodal,BGMM Effective Components,BGMM Lower Bound,BGMM Bimodal,Silverman h_c,Silverman p-value,Ashman's D,D > 2,Van der Eijk's A,KDE N Peaks,KDE Bimodal
+Historical counts,32,0.109375,0.002082,0.498262,No,140.0064,146.0802,-6.0738,No,2,-41.926,Yes,1.014334,0.3944,2.202164,Yes,0.625,2,Yes
+Mythical counts,18,0.066667,0.751532,0.428599,No,93.8496,98.5334,-4.6839,No,1,-31.0301,No,1.368097,0.6226,3.440009,Yes,0.511111,1,No

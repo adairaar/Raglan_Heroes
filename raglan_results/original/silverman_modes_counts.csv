@@ -1,0 +1,9 @@
+Distribution,k (modes),h_k (critical bandwidth),p-value,GMM AIC,GMM BIC,BGMM Lower Bound,BGMM Effective Components
+Historical counts,1,1.009432,0.3994,137.0749,140.0064,-44.0304,1
+Historical counts,2,0.87982,0.1081,132.9943,140.323,-41.926,2
+Historical counts,3,0.420285,0.5395,106.282,118.0079,-39.5398,2
+Historical counts,4,0.420285,0.1311,-67.0552,-50.9321,-37.0129,2
+Mythical counts,1,1.372376,0.6186,92.0688,93.8496,-33.6649,1
+Mythical counts,2,0.941726,0.3514,94.0816,98.5334,-31.0301,1
+Mythical counts,3,0.511076,0.7397,98.2782,105.4012,-28.7773,1
+Mythical counts,4,0.49385,0.3173,69.6463,79.4404,-26.4123,1
