@@ -1,0 +1,4 @@
+Parameter,Mean r with original,SD r,r >= 0.90 rate
+a (Discrimination),0.6567,0.2493,19.7%
+b (Difficulty),0.4847,0.2301,1.7%
+θ (Ability),0.8118,0.1463,39.5%

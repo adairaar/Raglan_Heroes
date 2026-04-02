@@ -1,0 +1,27 @@
+Item,Parameter,Original,Bootstrap Mean,Bootstrap SD,CI 2.5%,CI 97.5%,Covers Zero
+C1,a (Discrimination),0.3665,0.4425,1.9666,0.041,0.8074,False
+C2,a (Discrimination),-0.6302,-0.5372,2.411,-1.3501,-0.0286,False
+C3,a (Discrimination),-1.4109,-2.6404,10.0974,-9.1111,-0.0397,False
+C4,a (Discrimination),-0.7137,-0.9394,4.6253,-2.1529,-0.0309,False
+C6,a (Discrimination),-0.5157,-1.0528,5.1616,-2.0047,-0.029,False
+C8,a (Discrimination),0.5785,0.4081,0.1932,0.0286,0.697,False
+C11,a (Discrimination),-0.015,-0.23,0.1828,-0.692,-0.007,False
+C12,a (Discrimination),0.5737,0.3764,0.1611,0.0337,0.6219,False
+C13,a (Discrimination),-0.0871,-0.6324,2.8423,-2.1089,-0.0121,False
+C14,a (Discrimination),-0.35,-0.5188,2.0627,-1.2879,-0.0158,False
+C15,a (Discrimination),-0.4408,-2.256,9.5147,-6.8354,-0.0663,False
+C16,a (Discrimination),-0.4774,-0.4054,0.2305,-0.9314,-0.0343,False
+C17,a (Discrimination),-0.6192,-1.6445,6.6258,-3.8495,-0.0517,False
+C1,b (Difficulty),5.5634,19.564,296.6097,2.3651,43.7657,False
+C2,b (Difficulty),-2.2894,-11.931,84.1084,-44.2244,-1.1412,False
+C3,b (Difficulty),-1.3303,-6.6009,43.8782,-33.8426,-0.776,False
+C4,b (Difficulty),-0.8753,-4.5157,56.7911,-18.337,-0.19,False
+C6,b (Difficulty),-2.1106,-9.32,151.0961,-32.0534,-0.8138,False
+C8,b (Difficulty),3.1817,18.6471,365.6865,2.2699,49.5631,False
+C11,b (Difficulty),-13.9919,-9.0748,192.447,-28.8637,2.2975,True
+C12,b (Difficulty),2.4529,9.2773,60.2642,1.7109,38.9787,False
+C13,b (Difficulty),-12.5072,-16.9383,98.3204,-92.9638,-0.9095,False
+C14,b (Difficulty),-1.5392,-9.4389,135.3845,-28.575,-0.3324,False
+C15,b (Difficulty),-2.3984,-4.3985,24.9767,-17.1566,-0.7339,False
+C16,b (Difficulty),0.655,1.5156,4.4495,-0.3998,8.9299,True
+C17,b (Difficulty),-1.4526,-4.0169,37.1394,-16.9239,-0.5467,False
